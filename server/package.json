@@ -1,0 +1,21 @@
+{
+  "name": "android-offline-example-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha \"test/test.js\""
+  },
+  "author": "Bruno Santos",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "express": "^4.15.3",
+    "sequelize": "^3.30.4",
+    "sqlite3": "^3.1.8"
+  },
+  "devDependencies": {
+    "mocha": "^3.4.1",
+    "sinon": "^2.3.0"
+  }
+}
