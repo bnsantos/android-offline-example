@@ -10,7 +10,8 @@ module.exports = (db, Datatype) => {
     text: { type: Datatype.STRING },
     userId: {
       type: Datatype.STRING,
-      allowNull: false
+      allowNull: false,
+      primaryKey: true
     }
   })
   return Comments

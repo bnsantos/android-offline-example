@@ -10,7 +10,7 @@ router.use(bodyParser.json())
 
 router.param('commentId', param)
 
-router.route('/').post(create)
+router.route('/').post(create, alreadyExist)
 
 router.route('/:commentId')
   .get(read)
@@ -38,8 +38,32 @@ function create(req, res, next){
     res.status(201)
     res.json(comment)
   }).catch(err => {
-    console.log(err);
+    req.err = err
+    next()
   })
+}
+
+function alreadyExist(req, res, next){
+  if(req.err){
+    var err = req.err
+    if(err.errors && err.errors.length == 2){
+      Comments.findById(req.body.id, {include: [{model: Users, as: "User"}]})
+      .then(comment => {
+        if(!comment){
+          res.status(404).end()
+          return
+        }
+        res.status(200)
+        res.json(comment)
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).json({status: 500, msg: 'internal server error'})
+      })
+      return
+    }
+  }
+  res.status(500).json({status: 500, msg: 'internal server error'})
 }
 
 function param(req, res, next, id){
