@@ -21,6 +21,7 @@ module.exports = done => {
 
     //Relations
     db.models.Comment.belongsTo(db.models.User, {
+      as: "User",
       foreignKey: 'userId',
       foreignKeyConstraint: true,
       allowNull: false
