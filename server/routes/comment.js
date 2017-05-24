@@ -10,12 +10,31 @@ router.use(bodyParser.json())
 
 router.param('commentId', param)
 
-router.route('/').post(create, alreadyExist)
+router.route('/')
+  .get(readAll)
+  .post(create, alreadyExist)
 
 router.route('/:commentId')
   .get(read)
   .put(update)
   .delete(deleteRoute)
+
+function readAll(req, res, next){
+  Comments.findAll({
+    order: 'Comments.createdAt ASC',
+    include: [{model: Users, as : 'User'}]
+  }).then(comments => {
+    if(!comments){
+      res.status(404).end()
+      return
+    }
+    res.status(200)
+    res.json(comments)
+  }).catch(err => {
+    console.log(err);
+    res.status(500).json({status: 500, msg: 'internal server error'})
+  })
+}
 
 function create(req, res, next){
   var userId = req.get('userId')
@@ -67,7 +86,7 @@ function alreadyExist(req, res, next){
 }
 
 function param(req, res, next, id){
-  Comments.findById(id, {include: [{model: Users, as: "User"}]}).then(comment => {
+  Comments.findById(id, {include: [{model: Users, as: 'User'}]}).then(comment => {
     if(!comment){
       res.status(404).end()
       return
