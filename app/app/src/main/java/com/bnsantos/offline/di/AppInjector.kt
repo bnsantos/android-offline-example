@@ -4,11 +4,13 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import com.bnsantos.offline.App
+import com.bnsantos.offline.di.component.DaggerAppComponent
+import com.bnsantos.offline.di.module.AppModule
 import dagger.android.AndroidInjection
 
 object AppInjector: Application.ActivityLifecycleCallbacks {
     fun init(app: App){
-        DaggerAppComponent.builder().application(app).build().inject(app)
+        DaggerAppComponent.builder().application(app).setAppModule(AppModule(app)).build().inject(app)
         app.registerActivityLifecycleCallbacks(this)
     }
 

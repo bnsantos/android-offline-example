@@ -1,4 +1,4 @@
-package com.bnsantos.offline.di
+package com.bnsantos.offline.di.module
 
 import com.bnsantos.offline.MainActivity
 import dagger.Module

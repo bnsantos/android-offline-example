@@ -5,7 +5,7 @@ import io.reactivex.Flowable
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-public interface UserService{
+interface UserService{
     @POST("/users")
     fun create(@Body user: User): Flowable<User>
 }

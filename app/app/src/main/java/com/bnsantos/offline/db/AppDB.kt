@@ -6,7 +6,7 @@ import android.arch.persistence.room.TypeConverters
 import com.bnsantos.offline.models.Comment
 import com.bnsantos.offline.models.User
 
-@Database(entities = arrayOf(User::class, Comment::class), version = 0)
+@Database(entities = arrayOf(User::class, Comment::class), version = 1)
 @TypeConverters(Converters::class)
 public abstract class AppDB : RoomDatabase() {
     abstract public fun userDao(): UserDao

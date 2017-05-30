@@ -7,10 +7,13 @@ import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Query
 import com.bnsantos.offline.models.Comment
 
-@Dao public interface CommentDao{
+@Dao interface CommentDao{
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insert(vararg comment: Comment)
+    fun insert(vararg comment: Comment)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(comments: List<Comment>)
 
     @Query("SELECT * FROM Comment ORDER BY createdAt ASC")
-    abstract fun read(): LiveData<List<Comment>>
+    fun read(): LiveData<List<Comment>>
 }
