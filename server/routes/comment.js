@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 const db = require('../db')()
 const Users = db.models.User
 const Comments = db.models.Comment
+const USER_FIELD = 'user'
 
 router.use(bodyParser.json())
 
@@ -22,7 +23,7 @@ router.route('/:commentId')
 function readAll(req, res, next){
   Comments.findAll({
     order: 'Comments.createdAt ASC',
-    include: [{model: Users, as : 'User'}]
+    include: [{model: Users, as : USER_FIELD}]
   }).then(comments => {
     if(!comments){
       res.status(404).end()
@@ -66,7 +67,7 @@ function alreadyExist(req, res, next){
   if(req.err){
     var err = req.err
     if(err.errors && err.errors.length == 2){
-      Comments.findById(req.body.id, {include: [{model: Users, as: "User"}]})
+      Comments.findById(req.body.id, {include: [{model: Users, as: USER_FIELD}]})
       .then(comment => {
         if(!comment){
           res.status(404).end()
@@ -86,7 +87,7 @@ function alreadyExist(req, res, next){
 }
 
 function param(req, res, next, id){
-  Comments.findById(id, {include: [{model: Users, as: 'User'}]}).then(comment => {
+  Comments.findById(id, {include: [{model: Users, as: USER_FIELD}]}).then(comment => {
     if(!comment){
       res.status(404).end()
       return
