@@ -1,0 +1,14 @@
+{
+  "id": "user-1-comment-1",
+  "text": "comment created",
+  "userId": "user-1",
+  "createdAt": "2017-05-23T19:32:08.405Z",
+  "updatedAt": "2017-05-23T19:32:08.405Z",
+  "user": {
+    "id": "user-1",
+    "name": "John Doe",
+    "email": "john.doe@email.com",
+    "createdAt": "2017-05-23T19:31:38.734Z",
+    "updatedAt": "2017-05-23T19:31:38.734Z"
+  }
+}

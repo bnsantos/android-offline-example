@@ -21,7 +21,7 @@ class CommentsAdapter(var mComments: List<Comment> = listOf()) : RecyclerView.Ad
     override fun onBindViewHolder(holder: CommentHolder?, pos: Int) {
         val comment = mComments[pos]
         if (holder != null) {
-            holder.mName.text = comment.user.name
+            holder.mName.text = comment.user?.name
             holder.mText.text = comment.text
             holder.mDate.text = comment.createdAt.toString()
         }

@@ -9,7 +9,7 @@ import java.util.*
 data class Comment(
         @PrimaryKey val id: String,
         val text: String,
-        val createdAt: Date,
-        val updatedAt: Date,
-        @Embedded(prefix = "user_") val user: User
+        val createdAt: Date = Calendar.getInstance().time,
+        val updatedAt: Date = Calendar.getInstance().time,
+        @Embedded(prefix = "user_") val user: User? = null
 )

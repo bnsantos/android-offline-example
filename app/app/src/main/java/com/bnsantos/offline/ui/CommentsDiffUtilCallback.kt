@@ -23,8 +23,8 @@ class CommentsDiffUtilCallback (val mOld: List<Comment>, val mNew: List<Comment>
             bundle.putString("text", newC.text)
         }
 
-        if (oldC.user.name != newC.user.name){
-            bundle.putString("user", newC.user.name)
+        if (oldC.user?.name != newC.user?.name){
+            bundle.putString("user", newC.user?.name)
         }
 
         if (oldC.createdAt != newC.createdAt){
