@@ -1,11 +1,15 @@
-package com.bnsantos.offline
+package com.bnsantos.offline.ui.activities
 
 import android.arch.lifecycle.*
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import com.bnsantos.offline.R
 import com.bnsantos.offline.models.Comment
 import com.bnsantos.offline.ui.CommentsAdapter
 import com.bnsantos.offline.ui.CommentsDiffUtilCallback
@@ -13,10 +17,11 @@ import com.bnsantos.offline.viewmodel.CommentsViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
+
 class MainActivity : AppCompatActivity(), LifecycleRegistryOwner {
-    lateinit var mViewModel: CommentsViewModel
-    @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
     val mLifecycleRegistry = LifecycleRegistry(this)
+    @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
+    lateinit var mViewModel: CommentsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +45,25 @@ class MainActivity : AppCompatActivity(), LifecycleRegistryOwner {
             }
             Log.i(MainActivity::class.java.simpleName, "Comments: " + comments?.size)
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.user, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if(item?.itemId == R.id.editUser){
+            editUser()
+            return true
+        }else {
+            return super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun editUser(){
+        startActivity(Intent(this, UserActivity::class.java))
     }
 
     override fun getLifecycle(): LifecycleRegistry {

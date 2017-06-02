@@ -1,3 +1,10 @@
 <resources>
   <string name="app_name">Offline</string>
+  <string name="menu_edit_user">Edit User</string>
+  <string name="user_id_s">Id</string>
+  <string name="user_name_s">Name</string>
+  <string name="user_email_s">Email</string>
+  <string name="save">Save</string>
+  <string name="new_user">New</string>
+  <string name="please_create_user">Please create a new user</string>
 </resources>

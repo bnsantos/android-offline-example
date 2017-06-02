@@ -3,6 +3,7 @@ package com.bnsantos.offline.di.component
 import com.bnsantos.offline.App
 import com.bnsantos.offline.di.module.AppModule
 import com.bnsantos.offline.di.module.MainActivityModule
+import com.bnsantos.offline.di.module.UserActivityModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -14,6 +15,7 @@ import javax.inject.Singleton
         AndroidInjectionModule::class,
         AndroidSupportInjectionModule::class,
         MainActivityModule::class,
+        UserActivityModule::class,
         AppModule::class
 ))
 

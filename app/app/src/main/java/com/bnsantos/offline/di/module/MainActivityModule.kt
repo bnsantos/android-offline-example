@@ -1,6 +1,6 @@
 package com.bnsantos.offline.di.module
 
-import com.bnsantos.offline.MainActivity
+import com.bnsantos.offline.ui.activities.MainActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
