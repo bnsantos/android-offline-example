@@ -10,4 +10,8 @@ class CommentsViewModel @Inject constructor(val mRepo: CommentsRepository): View
     fun read(): LiveData<List<Comment>> {
         return mRepo.read()
     }
+
+    fun reload() {
+        mRepo.reload()
+    }
 }

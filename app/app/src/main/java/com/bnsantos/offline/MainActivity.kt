@@ -23,12 +23,16 @@ class MainActivity : AppCompatActivity(), LifecycleRegistryOwner {
         setContentView(R.layout.activity_main)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
+        swipeRefreshLayout.setOnRefreshListener {
+            mViewModel.reload()
+        }
         val adapter = CommentsAdapter()
         recyclerView.adapter = adapter
 
         mViewModel = ViewModelProviders.of(this, mViewModelFactory).get(CommentsViewModel::class.java)
         mViewModel.read().observe(this, Observer<List<Comment>> { comments ->
-            if (comments != null) { //Being executed on UI Thread
+            swipeRefreshLayout.isRefreshing = false
+            if (comments != null) { //TODO Being executed on UI Thread
                 val cb = CommentsDiffUtilCallback(adapter.mComments, comments)
                 val result = DiffUtil.calculateDiff(cb)
                 result.dispatchUpdatesTo(adapter)

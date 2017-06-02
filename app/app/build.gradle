@@ -36,6 +36,10 @@ android {
         from "build/tmp/kotlin-classes/debug"
         into "build/intermediates/classes/debug"
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 ext.support_version = "25.3.1"

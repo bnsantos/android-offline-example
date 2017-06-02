@@ -3,8 +3,6 @@ package com.bnsantos.offline.network;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -12,24 +10,19 @@ import java.util.Deque;
 import java.util.List;
 
 import io.reactivex.Notification;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/** A test {@link Subscriber} and JUnit rule which guarantees all events are asserted. */
-public final class RecordingSubscriber<T> implements Subscriber<T> {
-  private final long initialRequest;
+/** A test {@link Observer} and JUnit rule which guarantees all events are asserted. */
+public final class RecordingObserver<T> implements Observer<T> {
   private final Deque<Notification<T>> events = new ArrayDeque<>();
 
-  private Subscription subscription;
-
-  private RecordingSubscriber(long initialRequest) {
-    this.initialRequest = initialRequest;
+  private RecordingObserver() {
   }
 
-  @Override public void onSubscribe(Subscription subscription) {
-    this.subscription = subscription;
-
-    subscription.request(initialRequest);
+  @Override public void onSubscribe(Disposable disposable) {
   }
 
   @Override public void onNext(T value) {
@@ -68,12 +61,12 @@ public final class RecordingSubscriber<T> implements Subscriber<T> {
     return notification.getError();
   }
 
-  public RecordingSubscriber<T> assertAnyValue() {
+  public RecordingObserver<T> assertAnyValue() {
     takeValue();
     return this;
   }
 
-  public RecordingSubscriber<T> assertValue(T value) {
+  public RecordingObserver<T> assertValue(T value) {
     assertThat(takeValue()).isEqualTo(value);
     return this;
   }
@@ -107,22 +100,11 @@ public final class RecordingSubscriber<T> implements Subscriber<T> {
     assertThat(events).as("Unconsumed events found!").isEmpty();
   }
 
-  public void request(long amount) {
-    if (subscription == null) {
-      throw new IllegalStateException("onSubscribe has not been called yet. Did you subscribe()?");
-    }
-    subscription.request(amount);
-  }
-
   public static final class Rule implements TestRule {
-    final List<RecordingSubscriber<?>> subscribers = new ArrayList<>();
+    final List<RecordingObserver<?>> subscribers = new ArrayList<>();
 
-    public <T> RecordingSubscriber<T> create() {
-      return createWithInitialRequest(Long.MAX_VALUE);
-    }
-
-    public <T> RecordingSubscriber<T> createWithInitialRequest(long initialRequest) {
-      RecordingSubscriber<T> subscriber = new RecordingSubscriber<>(initialRequest);
+    public <T> RecordingObserver<T> create() {
+      RecordingObserver<T> subscriber = new RecordingObserver<>();
       subscribers.add(subscriber);
       return subscriber;
     }
@@ -131,7 +113,7 @@ public final class RecordingSubscriber<T> implements Subscriber<T> {
       return new Statement() {
         @Override public void evaluate() throws Throwable {
           base.evaluate();
-          for (RecordingSubscriber<?> subscriber : subscribers) {
+          for (RecordingObserver<?> subscriber : subscribers) {
             subscriber.assertNoEvents();
           }
         }

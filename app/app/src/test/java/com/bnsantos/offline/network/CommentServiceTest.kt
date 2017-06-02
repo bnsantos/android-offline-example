@@ -1,12 +1,11 @@
 package com.bnsantos.offline.network
 
+import com.bnsantos.offline.enqueueResponse
+import com.bnsantos.offline.loadFromResource
 import com.bnsantos.offline.models.Comment
-import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.google.gson.stream.JsonReader
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import okio.Okio
 import org.hamcrest.core.Is.`is`
 import org.hamcrest.core.IsNull.notNullValue
 import org.junit.After
@@ -20,14 +19,11 @@ import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
 
 @RunWith(JUnit4::class)
 class CommentServiceTest {
     @Rule @JvmField val mMockWebService = MockWebServer()
-    @Rule @JvmField val mSubscriberRule = RecordingSubscriber.Rule()
+    @Rule @JvmField val mSubscriberRule = RecordingObserver.Rule()
     private var mService : CommentService? = null
 
     @Before fun createServer() {
@@ -45,23 +41,17 @@ class CommentServiceTest {
 
     @Test
     fun readAll(){
-        enqueueResponse("read-all-comments.json")
+        enqueueResponse(mMockWebService, "read-all-comments.json", this@CommentServiceTest.javaClass.classLoader)
 
         val subscriber = mSubscriberRule.create<List<Comment>>()
         mService?.read()?.subscribe(subscriber)
-
-        val resourceAsStream = resourceAsInputStream("read-all-comments.json")
-        val targetReader = InputStreamReader(resourceAsStream)
-        val reader = JsonReader(targetReader)
-        val data = Gson().fromJson<List<Comment>>(reader, object : TypeToken<List<Comment>>() { }.type)
-        targetReader.close()
-
+        val data = loadFromResource<List<Comment>>("read-all-comments.json", this@CommentServiceTest.javaClass.classLoader, object : TypeToken<List<Comment>>() { }.type)
         subscriber.assertValue(data).assertComplete()
     }
 
     @Test
     fun create(){
-        enqueueResponse("create-comment.json")
+        enqueueResponse(mMockWebService, "create-comment.json", this@CommentServiceTest.javaClass.classLoader)
 
         val subscriber = mSubscriberRule.create<Comment>()
         val comment = Comment(
@@ -88,19 +78,4 @@ class CommentServiceTest {
         mService?.create("user-invalid", comment)?.subscribe(subscriber)
         subscriber.assertError(HttpException::class.java, "HTTP 401 Client Error")
     }
-
-    private fun enqueueResponse(fileName: String) {
-        enqueueResponse(resourceAsInputStream(fileName), emptyMap<String, String>())
-    }
-
-    private fun enqueueResponse(inputStream: InputStream, headers: Map<String, String>){
-        val source = Okio.buffer(Okio.source(inputStream))
-        val response = MockResponse()
-        for (key in headers.keys) {
-            response.addHeader(key, headers[key])
-        }
-        mMockWebService.enqueue(response.setBody(source.readString(StandardCharsets.UTF_8)))
-    }
-
-    private fun resourceAsInputStream(fileName: String) = this@CommentServiceTest.javaClass.classLoader.getResourceAsStream("api-response/" + fileName)
 }
