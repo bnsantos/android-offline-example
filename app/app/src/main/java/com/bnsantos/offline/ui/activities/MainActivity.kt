@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), LifecycleRegistryOwner {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
-        inflater.inflate(R.menu.user, menu)
+        inflater.inflate(R.menu.main, menu)
         return true
     }
 

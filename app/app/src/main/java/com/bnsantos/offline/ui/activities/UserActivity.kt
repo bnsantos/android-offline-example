@@ -3,6 +3,8 @@ package com.bnsantos.offline.ui.activities
 import android.arch.lifecycle.*
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import com.bnsantos.offline.R
 import com.bnsantos.offline.models.User
@@ -19,10 +21,6 @@ class UserActivity : AppCompatActivity(), LifecycleRegistryOwner {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user)
-
-        clear.setOnClickListener {
-            newUser()
-        }
 
         save.setOnClickListener {
             saveUser()
@@ -51,11 +49,25 @@ class UserActivity : AppCompatActivity(), LifecycleRegistryOwner {
         email.setText("")
 
         id.isEnabled = true
-        //Clear local user
     }
 
     private fun saveUser(){
         id.isEnabled = false
         mViewModel.save(id.text.toString(), name.text.toString(), email.text.toString())
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.user, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if(item?.itemId == R.id.newUser){
+            newUser()
+            return true
+        }else {
+            return super.onOptionsItemSelected(item)
+        }
     }
 }

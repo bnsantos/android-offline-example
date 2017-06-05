@@ -10,6 +10,5 @@ class UserViewModel @Inject constructor(val mRepo: UserRepository): ViewModel(){
     fun read(): LiveData<User> = mRepo.read()
     fun save(id: String, name: String, email: String) {
         mRepo.create(User(id,  name, email))
-        //TODO way to talk back to UI when user is created or saved
     }
 }

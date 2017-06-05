@@ -1,30 +1,34 @@
 package com.bnsantos.offline.repository
 
 import android.arch.lifecycle.LiveData
-import android.content.Context
+import android.arch.lifecycle.MutableLiveData
 import android.util.Log
+import com.bnsantos.offline.Preferences
 import com.bnsantos.offline.db.UserDao
 import com.bnsantos.offline.models.User
 import com.bnsantos.offline.network.UserService
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton class UserRepository @Inject constructor(
-        private var mUserId: String,
+class UserRepository @Inject constructor(
+        private val mPreferences: Preferences,
         private val mDao: UserDao,
-        private val mService: UserService,
-        private val mContext: Context){
-    private lateinit var mData: LiveData<User>
+        private val mService: UserService){
+    private var mMutable = MutableLiveData<User>()
+    private var mUserId: String = mPreferences.userId
 
     private fun init(){
-        mData = mDao.read(mUserId)
+        mDao.read(id = mUserId).observeForever { //TODO potentially leak?
+            if (it?.id == mUserId) {
+                mMutable.postValue(it)
+            }
+        }
     }
 
     fun read(): LiveData<User>{
         init()
-        return mData
+        return mMutable
     }
 
     fun create(user: User) {
@@ -34,9 +38,9 @@ import javax.inject.Singleton
                         onNext = {
                             if (it != null) {
                                 mDao.insert(it)
-                                val editor = mContext.getSharedPreferences("shared_prefs", Context.MODE_PRIVATE).edit()
-                                editor.putString("USER_ID", it.id)
-                                editor.apply()
+                                mPreferences.userId = it.id
+                                mUserId = it.id
+                                init()
                             }
 
                             Log.i(this@UserRepository::class.java.simpleName, "onNext: User ${it?.id} created")

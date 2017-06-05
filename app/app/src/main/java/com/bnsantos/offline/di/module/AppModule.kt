@@ -4,6 +4,7 @@ import android.app.Application
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.persistence.room.Room
 import android.content.Context
+import com.bnsantos.offline.Preferences
 import com.bnsantos.offline.db.AppDB
 import com.bnsantos.offline.db.CommentDao
 import com.bnsantos.offline.db.UserDao
@@ -37,7 +38,7 @@ import javax.inject.Singleton
 
     @Singleton @Provides fun factory(builder: ViewModelsComponent.Builder): ViewModelProvider.Factory = ViewModelFactory(builder.build())
 
-    @Provides fun userId(): String = mApp.getSharedPreferences("shared_prefs", Context.MODE_PRIVATE).getString("USER_ID", "---------")
+    @Singleton @Provides fun sharedPrefs(): Preferences = Preferences(mApp)
 
     @Singleton @Provides fun context(): Context = mApp
 }

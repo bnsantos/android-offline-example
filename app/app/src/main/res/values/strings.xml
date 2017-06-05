@@ -7,4 +7,5 @@
   <string name="save">Save</string>
   <string name="new_user">New</string>
   <string name="please_create_user">Please create a new user</string>
+  <string name="menu_new_user">New user</string>
 </resources>
