@@ -8,10 +8,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.bnsantos.offline.R
 import com.bnsantos.offline.models.Comment
+import java.text.SimpleDateFormat
 import java.util.*
 
 
 class CommentsAdapter(var mComments: List<Comment> = listOf()) : RecyclerView.Adapter<CommentsAdapter.CommentHolder>() {
+    val mDateFormat = SimpleDateFormat("HH:mm dd/MMM/yyyy")
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): CommentHolder {
         val view = LayoutInflater.from(parent?.context).inflate(R.layout.adapter_comment, parent, false)
@@ -23,7 +25,7 @@ class CommentsAdapter(var mComments: List<Comment> = listOf()) : RecyclerView.Ad
         if (holder != null) {
             holder.mName.text = comment.user?.name
             holder.mText.text = comment.text
-            holder.mDate.text = comment.createdAt.toString()
+            holder.mDate.text = mDateFormat.format(comment.createdAt)
         }
     }
 
