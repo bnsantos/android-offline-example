@@ -1,8 +1,7 @@
 package com.bnsantos.offline.ui.activities
 
-import android.arch.lifecycle.*
+import android.arch.lifecycle.Observer
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -10,13 +9,8 @@ import com.bnsantos.offline.R
 import com.bnsantos.offline.models.User
 import com.bnsantos.offline.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_user.*
-import javax.inject.Inject
 
-class UserActivity : AppCompatActivity(), LifecycleRegistryOwner {
-    val mLifecycleRegistry = LifecycleRegistry(this)
-    @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
-    lateinit var mViewModel: UserViewModel
-
+class UserActivity : BaseActivity<UserViewModel>(UserViewModel::class.java){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +20,6 @@ class UserActivity : AppCompatActivity(), LifecycleRegistryOwner {
             saveUser()
         }
 
-        mViewModel = ViewModelProviders.of(this, mViewModelFactory).get(UserViewModel::class.java)
         mViewModel.read().observe(this, Observer<User> { user ->
             if (user != null) {
                 id.setText(user.id)
@@ -37,10 +30,6 @@ class UserActivity : AppCompatActivity(), LifecycleRegistryOwner {
                 newUser()
             }
         })
-    }
-
-    override fun getLifecycle(): LifecycleRegistry {
-        return mLifecycleRegistry
     }
 
     private fun newUser(){

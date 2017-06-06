@@ -1,9 +1,8 @@
 package com.bnsantos.offline.ui.activities
 
-import android.arch.lifecycle.*
+import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
@@ -15,13 +14,9 @@ import com.bnsantos.offline.ui.CommentsAdapter
 import com.bnsantos.offline.ui.CommentsDiffUtilCallback
 import com.bnsantos.offline.viewmodel.CommentsViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import javax.inject.Inject
 
 
-class MainActivity : AppCompatActivity(), LifecycleRegistryOwner {
-    val mLifecycleRegistry = LifecycleRegistry(this)
-    @Inject lateinit var mViewModelFactory: ViewModelProvider.Factory
-    lateinit var mViewModel: CommentsViewModel
+class MainActivity : BaseActivity<CommentsViewModel>(CommentsViewModel::class.java) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +29,6 @@ class MainActivity : AppCompatActivity(), LifecycleRegistryOwner {
         val adapter = CommentsAdapter()
         recyclerView.adapter = adapter
 
-        mViewModel = ViewModelProviders.of(this, mViewModelFactory).get(CommentsViewModel::class.java)
         mViewModel.read().observe(this, Observer<List<Comment>> { comments ->
             swipeRefreshLayout.isRefreshing = false
             if (comments != null) { //TODO Being executed on UI Thread
@@ -64,9 +58,5 @@ class MainActivity : AppCompatActivity(), LifecycleRegistryOwner {
 
     private fun editUser(){
         startActivity(Intent(this, UserActivity::class.java))
-    }
-
-    override fun getLifecycle(): LifecycleRegistry {
-        return mLifecycleRegistry
     }
 }
