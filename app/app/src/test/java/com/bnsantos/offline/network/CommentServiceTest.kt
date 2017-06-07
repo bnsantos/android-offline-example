@@ -39,8 +39,7 @@ class CommentServiceTest {
         mMockWebService.shutdown()
     }
 
-    @Test
-    fun readAll(){
+    @Test fun readAll(){
         enqueueResponse(mMockWebService, "read-all-comments.json", this@CommentServiceTest.javaClass.classLoader)
 
         val subscriber = mSubscriberRule.create<List<Comment>>()
@@ -49,8 +48,7 @@ class CommentServiceTest {
         subscriber.assertValue(data).assertComplete()
     }
 
-    @Test
-    fun create(){
+    @Test fun create(){
         enqueueResponse(mMockWebService, "create-comment.json", this@CommentServiceTest.javaClass.classLoader)
 
         val subscriber = mSubscriberRule.create<Comment>()
@@ -67,8 +65,7 @@ class CommentServiceTest {
         subscriber.assertComplete()
     }
 
-    @Test
-    fun createInvalidUser(){
+    @Test fun createInvalidUser(){
         mMockWebService.enqueue(MockResponse().setResponseCode(401).setBody("{\"status\": 401, \"msg\": \"unauthorized\"}"))
         val subscriber = mSubscriberRule.create<Comment>()
         val comment = Comment(
