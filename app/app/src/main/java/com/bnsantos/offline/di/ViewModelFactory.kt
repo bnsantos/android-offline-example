@@ -6,6 +6,7 @@ import android.support.v4.util.ArrayMap
 
 import com.bnsantos.offline.di.component.ViewModelsComponent
 import com.bnsantos.offline.viewmodel.CommentsViewModel
+import com.bnsantos.offline.viewmodel.CreateCommentViewModel
 import com.bnsantos.offline.viewmodel.UserViewModel
 import java.util.concurrent.Callable
 
@@ -16,6 +17,7 @@ class ViewModelFactory (viewModelsComponent: ViewModelsComponent) : ViewModelPro
     init {
         creators.put(CommentsViewModel::class.java, Callable { viewModelsComponent.commentViewModel() })
         creators.put(UserViewModel::class.java, Callable { viewModelsComponent.userViewModel() })
+        creators.put(CreateCommentViewModel::class.java, Callable { viewModelsComponent.createCommentViewModel() })
     }
 
     override fun <T : ViewModel?> create(modelClass: Class<T>?): T {

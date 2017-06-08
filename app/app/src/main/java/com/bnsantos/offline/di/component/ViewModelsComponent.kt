@@ -1,6 +1,7 @@
 package com.bnsantos.offline.di.component
 
 import com.bnsantos.offline.viewmodel.CommentsViewModel
+import com.bnsantos.offline.viewmodel.CreateCommentViewModel
 import com.bnsantos.offline.viewmodel.UserViewModel
 import dagger.Subcomponent
 
@@ -11,4 +12,5 @@ import dagger.Subcomponent
     }
     fun commentViewModel(): CommentsViewModel
     fun userViewModel(): UserViewModel
+    fun createCommentViewModel(): CreateCommentViewModel
 }

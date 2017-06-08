@@ -3,10 +3,15 @@ package com.bnsantos.offline.di
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentActivity
+import android.support.v4.app.FragmentManager
 import com.bnsantos.offline.App
 import com.bnsantos.offline.di.component.DaggerAppComponent
 import com.bnsantos.offline.di.module.AppModule
 import dagger.android.AndroidInjection
+import dagger.android.support.AndroidSupportInjection
+import dagger.android.support.HasSupportFragmentInjector
 
 object AppInjector: Application.ActivityLifecycleCallbacks {
     fun init(app: App){
@@ -33,6 +38,20 @@ object AppInjector: Application.ActivityLifecycleCallbacks {
     }
 
     private fun handleActivity(activity: Activity){
-        AndroidInjection.inject(activity)
+        if (activity is HasSupportFragmentInjector) {
+            AndroidInjection.inject(activity)
+        }
+        if (activity is FragmentActivity) {
+            activity.supportFragmentManager
+                    .registerFragmentLifecycleCallbacks(
+                            object : FragmentManager.FragmentLifecycleCallbacks() {
+                                override fun onFragmentCreated(fm: FragmentManager?, f: Fragment?,
+                                                               savedInstanceState: Bundle?) {
+                                    if (f is Injectable) {
+                                        AndroidSupportInjection.inject(f!!)
+                                    }
+                                }
+                            }, true)
+        }
     }
 }
