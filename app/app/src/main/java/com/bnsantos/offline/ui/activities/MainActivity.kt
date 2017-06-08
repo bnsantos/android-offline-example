@@ -12,6 +12,7 @@ import com.bnsantos.offline.R
 import com.bnsantos.offline.models.Comment
 import com.bnsantos.offline.ui.CommentsAdapter
 import com.bnsantos.offline.ui.CommentsDiffUtilCallback
+import com.bnsantos.offline.ui.fragments.CreateCommentFragment
 import com.bnsantos.offline.viewmodel.CommentsViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -39,6 +40,10 @@ class MainActivity : BaseActivity<CommentsViewModel>(CommentsViewModel::class.ja
             }
             Log.i(MainActivity::class.java.simpleName, "Comments: " + comments?.size)
         })
+
+        supportFragmentManager.beginTransaction()
+                .add(R.id.createFragment, CreateCommentFragment())
+                .commit()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
