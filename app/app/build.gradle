@@ -42,9 +42,9 @@ android {
     }
 }
 
-ext.support_version = "25.3.1"
-ext.dagger_version = "2.11-rc2"
-ext.arch_version = "1.0.0-alpha1"
+ext.support_version = "25.4.0"
+ext.dagger_version = "2.11"
+ext.arch_version = "1.0.0-alpha2"
 ext.retrofit_version = "2.3.0"
 ext.rx_kotlin_version = "2.0.3"
 ext.rx_android_version = "2.0.1"
@@ -74,6 +74,7 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxandroid:$rx_android_version"
 
     implementation "android.arch.persistence.room:runtime:$arch_version"
+    implementation "android.arch.persistence.room:rxjava2:$arch_version"
     implementation "android.arch.lifecycle:runtime:$arch_version"
     implementation "android.arch.lifecycle:extensions:$arch_version"
 

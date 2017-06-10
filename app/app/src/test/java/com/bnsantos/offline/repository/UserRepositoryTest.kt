@@ -1,13 +1,13 @@
 package com.bnsantos.offline.repository
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
-import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
 import com.bnsantos.offline.Preferences
 import com.bnsantos.offline.db.UserDao
 import com.bnsantos.offline.models.User
 import com.bnsantos.offline.network.UserService
 import com.bnsantos.offline.vo.Resource
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import org.hamcrest.core.IsNull
 import org.junit.Assert.assertEquals
@@ -37,11 +37,10 @@ class UserRepositoryTest {
     }
 
     @Test fun testCache(){
-        val dbData = MutableLiveData<User>()
-        val user = User("u1", "John Doe", "john.doe@email.com")
-        dbData.value = user
-        Mockito.`when`(mDao.read("u1")).thenReturn(dbData)
-        Mockito.`when`(mService.read("u1")).thenReturn(Observable.just(user))
+        val cached = User("u1", "John Doe", "john.doe@email.com")
+        val server = User("u1", "John Doe", "john.doe.new.email@email.com")
+        Mockito.`when`(mDao.read("u1")).thenReturn(Flowable.just(cached))
+        Mockito.`when`(mService.read("u1")).thenReturn(Observable.just(server))
 
         val observer = Mockito.mock(Observer::class.java)
         val liveData = mRepo.read()
@@ -52,13 +51,14 @@ class UserRepositoryTest {
         Mockito.verifyNoMoreInteractions(mService)
         assertThat(liveData.value, IsNull.notNullValue())
 
-        assertEquals(liveData.value, Resource.Success(user))
+        assertEquals(liveData.value, Resource.Loading(cached))
+        Thread.sleep(500) //Wait little bit to value change to server response. Figured out a better way to do this
+        assertEquals(liveData.value, Resource.Success(server))
     }
 
     @Test fun testEmptyCache(){
-        val dbData = MutableLiveData<User>()
         val user = User("u1", "John Doe", "john.doe@email.com")
-        Mockito.`when`(mDao.read("u1")).thenReturn(dbData)
+        Mockito.`when`(mDao.read("u1")).thenReturn(Flowable.empty())
         Mockito.`when`(mService.read("u1")).thenReturn(Observable.just(user))
 
         val observer = Mockito.mock(Observer::class.java)

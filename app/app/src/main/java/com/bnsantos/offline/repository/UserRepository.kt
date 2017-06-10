@@ -8,8 +8,10 @@ import com.bnsantos.offline.db.UserDao
 import com.bnsantos.offline.models.User
 import com.bnsantos.offline.network.UserService
 import com.bnsantos.offline.vo.Resource
+import io.reactivex.processors.AsyncProcessor
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subscribers.DisposableSubscriber
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
@@ -17,25 +19,23 @@ class UserRepository @Inject constructor(
         private val mDao: UserDao,
         private val mService: UserService){
 
-    private val mRead : MutableLiveData<Resource<User>> by lazy { MutableLiveData<Resource<User>>() }
-    private val mCreate : MutableLiveData<Resource<User>> by lazy { MutableLiveData<Resource<User>>() }
+    private val mAsyncProcessor = AsyncProcessor.create<User>()
+    private val mDisposableSubscriber = ReadUserDisposable()
+    private val mData : MutableLiveData<Resource<User>> by lazy { MutableLiveData<Resource<User>>() }
 
     private var mUserId: String = mPreferences.userId
 
-    private fun init(){
-        mDao.read(id = mUserId).observeForever { //TODO potentially leak? check this later
-            if (it != null) {
-                if (it.id == mUserId) {
-                    mRead.postValue(Resource.Loading(it))
-                }
-            }
-        }
+    private fun readCached(userId: String){
+        mAsyncProcessor.subscribeWith(mDisposableSubscriber)
+        mDao.read(id = userId)
+                .subscribeOn(Schedulers.io())
+                .subscribe(mAsyncProcessor)
     }
 
-    fun read(): LiveData<Resource<User>>{
-        init()
+    fun read(userId: String = mUserId): LiveData<Resource<User>>{
+        readCached(userId)
         readServer()
-        return mRead
+        return mData
     }
 
     private fun readServer() {
@@ -44,14 +44,15 @@ class UserRepository @Inject constructor(
                 .subscribeBy(
                         onNext = {
                             mDao.insert(it)
-                            mRead.postValue(Resource.Success(it))
+                            mData.postValue(Resource.Success(it))
                         },
                         onError = {
                             Log.e(this@UserRepository::class.java.simpleName, "onError", it)
-                            mRead.postValue(Resource.Error(it.localizedMessage, it))
-                        }, onComplete = {
-                    Log.i(this@UserRepository::class.java.simpleName, "onCompleted")
-                }
+                            mData.postValue(Resource.Error(it.localizedMessage, it))
+                        },
+                        onComplete = {
+                            Log.i(this@UserRepository::class.java.simpleName, "onCompleted")
+                        }
                 )
     }
 
@@ -64,19 +65,39 @@ class UserRepository @Inject constructor(
                                 mDao.insert(it)
                                 mPreferences.userId = it.id
                                 mUserId = it.id
-                                mCreate.postValue(Resource.Success(it))
+                                mData.postValue(Resource.Success(it))
                             }
                             Log.i(this@UserRepository::class.java.simpleName, "onNext: User ${it?.id} created")
                         },
                         onError = {
                             Log.e(this@UserRepository::class.java.simpleName, "onError", it)
-                            mCreate.postValue(Resource.Error(it.localizedMessage, it))
+                            mData.postValue(Resource.Error(it.localizedMessage, it))
                         },
                         onComplete = {
                             Log.i(this@UserRepository::class.java.simpleName, "onCompleted")
                         }
                 )
 
-        return  mCreate
+        return  mData
+    }
+
+    private inner class ReadUserDisposable: DisposableSubscriber<User>() {
+        override fun onError(t: Throwable?) {
+            if (t != null) {
+                Log.e(this@UserRepository::class.java.simpleName, "onError", t)
+                mData.postValue(Resource.Error("Error", t))
+            }
+        }
+
+        override fun onNext(t: User?) {
+            if (t != null) {
+                mData.postValue(Resource.Loading(t))
+            }
+        }
+
+        override fun onComplete() {
+            Log.i(this@UserRepository::class.java.simpleName, "onCompleted")
+        }
+
     }
 }
