@@ -12,6 +12,7 @@ import io.reactivex.processors.AsyncProcessor
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subscribers.DisposableSubscriber
+import java.net.ConnectException
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
@@ -48,7 +49,12 @@ class UserRepository @Inject constructor(
                         },
                         onError = {
                             Log.e(this@UserRepository::class.java.simpleName, "onError", it)
-                            mData.postValue(Resource.Error(it.localizedMessage, it))
+                            when (it) {
+                                is ConnectException ->
+                                    Log.e(this@UserRepository::class.java.simpleName, "onError")
+                                else ->
+                                    mData.postValue(Resource.Error(it.localizedMessage, it))
+                            }
                         },
                         onComplete = {
                             Log.i(this@UserRepository::class.java.simpleName, "onCompleted")

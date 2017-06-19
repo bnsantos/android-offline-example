@@ -3,7 +3,6 @@ package com.bnsantos.offline.ui.activities
 import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
@@ -15,13 +14,10 @@ import com.bnsantos.offline.ui.CommentsAdapter
 import com.bnsantos.offline.ui.CommentsDiffUtilCallback
 import com.bnsantos.offline.ui.fragments.CreateCommentFragment
 import com.bnsantos.offline.viewmodel.CommentsViewModel
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
-import javax.inject.Inject
 
 
-class MainActivity : BaseActivity<CommentsViewModel>(CommentsViewModel::class.java), HasSupportFragmentInjector {
+class MainActivity : BaseActivity<CommentsViewModel>(CommentsViewModel::class.java){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +64,4 @@ class MainActivity : BaseActivity<CommentsViewModel>(CommentsViewModel::class.ja
     private fun editUser(){
         startActivity(Intent(this, UserActivity::class.java))
     }
-
-    @Inject lateinit var mDispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-    override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> { return mDispatchingAndroidInjector }
 }
